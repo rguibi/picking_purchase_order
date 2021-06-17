@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_picking_purchase_form" model="ir.ui.view">
+            <field name="name">stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="priority" eval="1"/>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[2]" position="after">
+                    <page string="Related purchase" attrs="{'invisible': [('state', '!=', 'done'),('location_id','!=','parent.location_id')]}">
+                        <field name="details_ids">
+                            <tree>
+                                <field name="product_id"/>
+                                <field name="product_qty"/>
+                                <field name="origin"/>
+                                <field name="origin_date"/>
+                                <field name="origin_reference"/>
+                            </tree>
+                        </field>
+                    </page>
+
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
