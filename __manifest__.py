@@ -14,6 +14,7 @@
     'website': '',
     'depends': ['purchase','stock'],
     "data": [
+        "security/ir.model.access.csv",
         "views/stock_move.xml",
 
     ],
