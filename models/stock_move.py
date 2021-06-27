@@ -20,19 +20,57 @@ class StockMove(models.Model):
         vals=self.env['stock.move'].search([
             ('product_id','=',self.product_id.id),
             ('location_dest_id','=',self.location_id.id),
-            ('product_qty','!=',self.saled_qty),
-            ('state','in',['done','confirmed'])
+            ('product_qty','>',0),
+            ('state','in',['done','confirmed']),
+            #('date','>=','20210101')
         ], order='date asc')
         return vals
+
+    def linkedPurchase(self):
+        view = self.env.ref('picking_purchase_order.purchase_qty_form_view')
+        # wiz = self.env['stock.immediate.transfer'].create({'pick_ids': [(4, self.id)]})
+        lst_move = self.valid_move()
+        contxt = {'product_id': self.product_id.id,'location_id':self.location_dest_id.id,'product_uom':self.product_uom.id,'deliv_qty':self.quantity_done,'move_id':self.id}
+
+        wiz = self.env['purchase.quantity'].create(contxt)
+        for rec in lst_move:
+            data={
+                'purchaseqty_id':wiz.id,
+                'picking_id':self.picking_id.id,
+                'product_id':rec.product_id.id,
+                'location_dest_id':rec.location_dest_id.id,
+                'product_qty':rec.product_qty,
+                'saled_qty':rec.saled_qty,
+                'move_id':rec.id,
+                'purchase_line_id':rec.purchase_line_id.id,
+                'available_qty':rec.product_qty-rec.saled_qty
+            }
+            rec.env['purchase.quantity.line'].create(data)
+
+        return {
+            'name': _('Purchase quantity'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'purchase.quantity',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'new',
+            'res_id': wiz.id,
+            'context':contxt #self.env.context,
+        }
+
+
 
 class StockPicking(models.Model):
     _inherit='stock.picking'
 
     details_ids = fields.One2many(
-        comodel_name='purchase.picking.sale',
+        comodel_name='purchase.quantity.line',
         inverse_name='picking_id',
         string='Related Purchase',
         required=False)
+
 
     def generateSaleFromPurchase(self):
         for move in self.move_lines:
@@ -44,9 +82,6 @@ class StockPicking(models.Model):
                     print(qty_move)
                     if qty_move==0:
                         return
-                    print('yes')
-                    print(rec.product_qty - rec.saled_qty)
-
                     if (rec.product_qty - rec.saled_qty) <= 0:
                         qty_move = 0
                         return
@@ -138,10 +173,12 @@ class StockPicking(models.Model):
             }
 
         # Check backorder should check for other barcodes
+        for rec in self.move_lines:
+            return rec.linkedPurchase()
+
         if self._check_backorder():
             return self.action_generate_backorder_wizard()
         self.action_done()
-        self.generateSaleFromPurchase()
         return
 
 
@@ -194,7 +231,7 @@ class DeliveryPurchase(models.Model):
         required=False)
 
     picking_id = fields.Many2one(
-        comodel_name='stock_picking',
+        comodel_name='stock.picking',
         string='Mouvement',
         required=False)
 

@@ -16,6 +16,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/stock_move.xml",
+        "views/wizard_purchase_list.xml",
 
     ],
     'demo': [
