@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_stock_picking_sale,picking_purchase_order.purchase_picking_salee,picking_purchase_order.model_purchase_picking_sale,stock.group_stock_user,1,1,1,1
+access_purchase_quantity,picking_purchase_order.purchase_quantity,picking_purchase_order.model_purchase_quantity,stock.group_stock_user,1,1,1,1
+access_purchase_quantity_line,picking_purchase_order.purchase_quantity_line,picking_purchase_order.model_purchase_quantity_line,stock.group_stock_user,1,1,1,1
