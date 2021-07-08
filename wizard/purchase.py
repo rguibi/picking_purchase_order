@@ -77,6 +77,7 @@ class PurchaseQty(models.Model):
                 'price_unit':-self.total_amount/self.deliv_qty,
                 'value':-self.total_amount,
                 'remaining_qty':-self.deliv_qty,
+                'quantity_done':self.deliv_qty,
                 'remaining_value':-self.total_amount
             })
 

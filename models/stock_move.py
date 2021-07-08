@@ -30,7 +30,7 @@ class StockMove(models.Model):
         view = self.env.ref('picking_purchase_order.purchase_qty_form_view')
         # wiz = self.env['stock.immediate.transfer'].create({'pick_ids': [(4, self.id)]})
         lst_move = self.valid_move()
-        contxt = {'product_id': self.product_id.id,'location_id':self.location_dest_id.id,'product_uom':self.product_uom.id,'deliv_qty':self.quantity_done,'move_id':self.id}
+        contxt = {'product_id': self.product_id.id,'location_id':self.location_dest_id.id,'product_uom':self.product_uom.id,'deliv_qty':self.reserved_availability,'move_id':self.id}
 
         wiz = self.env['purchase.quantity'].create(contxt)
         for rec in lst_move:
@@ -60,6 +60,9 @@ class StockMove(models.Model):
             'context':contxt #self.env.context,
         }
 
+    def action_show_details(self):
+        return self.linkedPurchase()
+
 
 
 class StockPicking(models.Model):
@@ -70,7 +73,6 @@ class StockPicking(models.Model):
         inverse_name='picking_id',
         string='Related Purchase',
         required=False)
-
 
     def generateSaleFromPurchase(self):
         for move in self.move_lines:
