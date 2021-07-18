@@ -215,8 +215,8 @@ class StockPicking(models.Model):
             }
 
         # Check backorder should check for other barcodes
-        for rec in self.move_lines:
-            return rec.linkedPurchase()
+        # for rec in self.move_lines:
+        #     return rec.linkedPurchase()
 
         if self._check_backorder():
             return self.action_generate_backorder_wizard()
