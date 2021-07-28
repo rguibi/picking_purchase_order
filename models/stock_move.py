@@ -22,7 +22,7 @@ class StockMove(models.Model):
             ('location_dest_id','=',self.location_id.id),
             ('product_qty','>',0),
             ('state','in',['done','confirmed']),
-            #('date','>=','20210101')
+            ('date','>=','2020-01-01 00:00:00')
         ], order='date asc')
         return vals
 
