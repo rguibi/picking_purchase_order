@@ -2,7 +2,7 @@ from odoo import fields, models, api
 
 
 class PurchaseOrder(models.Model):
-    _inherit = 'purchase.prder'
+    _inherit = 'purchase.order'
 
     @api.multi
     def action_view_picking(self):
